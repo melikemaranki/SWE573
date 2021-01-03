@@ -2,3 +2,4 @@ myCredentials.py
 .ipynb_checkpoints
 __pycache__
 db.sqlite3
+settings.py
