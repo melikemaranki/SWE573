@@ -1,7 +1,7 @@
 from django.shortcuts import render 
 from django.contrib.auth.decorators import login_required
 from .getData import getData
-from .utils import get_plot
+from .utils import get_plot, get_wordcloud
 
 @login_required
 def profile(request):
@@ -14,4 +14,5 @@ def showResults(request):
         text = request.GET['search']
         data = getData(text)
         chart =  get_plot(data)
-        return render(request, 'dashboard/showResults.html', {"search": text, "chart":chart})
+        wcloud = get_wordcloud(data)
+        return render(request, 'dashboard/showResults.html', {"search": text, "chart":chart, "wcloud":wcloud})

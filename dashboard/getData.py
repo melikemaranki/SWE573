@@ -11,6 +11,7 @@ from nltk import bigrams
 import nltk
 import itertools
 from nltk.corpus import stopwords
+import re
 
 def getData(text):
     # Pass OAuth details to tweepy's OAuth handler
@@ -23,28 +24,28 @@ def getData(text):
     query = text +" -filter:retweets"
     search = Cursor(api.search, q = query, lang = 'en'). items(100)
 
-
-    list_of_dicts = []
-    for tweet in search:
-        list_of_dicts.append({'tweet' :tweet.text, 'created_at':tweet.created_at})
-
-    df= DataFrame.from_dict(list_of_dicts)
-
-
-    # Download stopwords
-    nltk.download('stopwords')
-    stop_words = set(stopwords.words('english'))
-    #textblob
-    list_of_splitted_tweets = [tweet.replace("!","").lower().split() for tweet in df.tweet]
-
-    query_words = ["covid-19", "covid",'''separate query stop words from others''' "could", "got", "like", "&amp;", "-", "|"]
-    stop_words.update(query_words)
-    stop_words
-    words_cleaned =  [[word for word in tweets if not word in stop_words]
-                    for tweets in list_of_splitted_tweets]
-
-
-    # Flatten list of words in clean tweets
-    all_words = list(itertools.chain(*words_cleaned))
-    return all_words    
+    try:
+        search.next()
+    except StopIteration:
+        # Code here for the case where the iterator is empty
+        return ""
+    else:
+        list_of_dicts = []
+        for tweet in search:
+            tweet.text = re.sub(r'http\S+', '', tweet.text)
+            list_of_dicts.append({'tweet' :tweet.text, 'created_at':tweet.created_at})
+        df= DataFrame.from_dict(list_of_dicts)
+        # Download stopwords
+        nltk.download('stopwords')
+        stop_words = set(stopwords.words('english'))
+        #textblob
+        list_of_splitted_tweets = [tweet.replace("!","").lower().split() for tweet in df.tweet]
+        query_words = ["covid-19", "covid",'''separate query stop words from others''' "could", "got", "like", "&amp;", "-", "|"]
+        stop_words.update(query_words)
+        words_cleaned =  [[word for word in tweets if not word in stop_words]
+                        for tweets in list_of_splitted_tweets]
+        # Flatten list of words in clean tweets
+        all_words = list(itertools.chain(*words_cleaned))
+        return all_words
+  
    
