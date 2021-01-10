@@ -1,7 +1,7 @@
 from django.shortcuts import render 
 from django.contrib.auth.decorators import login_required
-from .getData import getData
-from .utils import get_plot, get_wordcloud
+from .data_util import getData
+from .image_util import get_plot, get_wordcloud
 
 @login_required
 def profile(request):
