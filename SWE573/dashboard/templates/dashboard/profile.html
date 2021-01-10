@@ -3,7 +3,7 @@
 {% block content %}
    <h3>Welcome {{ user.username }}!</h3>
    <form action="{% url 'showResults' %}" method="get">
-      <input name="search" type="text" name="name_field" value="Search keywords.">
+      <input name="search" type="text" name="name_field" placeholder="Search keywords.">
       <input type="submit">
   </form>
 {% endblock content %}
