@@ -1,1 +1,1 @@
-web: gunicorn SWE573.wsgi
+web: gunicorn SWE573.wsgi --timeout 3000

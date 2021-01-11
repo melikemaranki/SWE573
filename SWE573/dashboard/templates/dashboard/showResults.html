@@ -12,7 +12,7 @@
  
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Top10')">Top10</button>
-  <button class="tablinks" onclick="openTab(event, 'Wordcloud')">Wordcloud</button>
+  <button class="tablinks" action="{% url 'wordcloud' %}" method="get" onclick="openTab(event, 'Wordcloud')">Wordcloud</button>
 </div>
 
 <div id="Top10" class="tabcontent">

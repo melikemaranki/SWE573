@@ -14,5 +14,5 @@ def showResults(request):
         text = request.GET['search']
         data = getData(text)
         chart =  get_plot(data)
-        wcloud = get_wordcloud(data)
-        return render(request, 'dashboard/showResults.html', {"search": text, "chart":chart, "wcloud":wcloud})
+        #wcloud = get_wordcloud(data)
+        return render(request, 'dashboard/showResults.html', {"search": text, "chart":chart})#, "wcloud":wcloud"""})

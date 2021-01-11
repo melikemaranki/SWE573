@@ -13,7 +13,7 @@ import itertools
 from nltk.corpus import stopwords
 import re
 from django.utils import timezone
-from dashboard.models import Tweets
+from dashboard.models import Tweets, Search
 
 def getData(text):
     # Pass OAuth details to tweepy's OAuth handler
@@ -24,7 +24,7 @@ def getData(text):
     api = tweepy.API(auth, wait_on_rate_limit=True)
     ##public_tweets = api.home_timeline()
     query = text +" -filter:retweets"
-    search = Cursor(api.search, q = query, lang = 'en'). items(10)
+    search = Cursor(api.search, q = query, lang = 'en'). items(100)
 
     try:
         search.next()
@@ -32,6 +32,9 @@ def getData(text):
         # Code here for the case where the iterator is empty
         return ""
     else:
+        s =  Search()
+        s.save()
+        s_id = Search.objects.latest("search_id").pk
         list_of_dicts = []
         #user_mention = []
         for tweet in search:
@@ -46,9 +49,8 @@ def getData(text):
                                 'friends_count': tweet.user.friends_count, 
                                 'followers_count':tweet.user.followers_count, 
                                 "is_sensitive": is_sensitive})"""
-            list_of_dicts.append({'tweet_id':tweet.id,  
-                                'tweet' :tweet.text})
-            query = Tweets(tweet_id = tweet.id, tweet_text = tweet.text, search_keyword = text)
+            list_of_dicts.append({'tweet' :tweet.text})
+            query = Tweets(tweet_id = tweet.id, tweet_text = tweet.text, search_keyword = text)# search_id = s_id)
             query.save()
 
         """for mention in tweet.entities['user_mentions']:
@@ -57,12 +59,12 @@ def getData(text):
          """
         
         
-        df= DataFrame.from_dict(Tweets.objects.all().values("tweet_text"))
+        df= DataFrame.from_dict(list_of_dicts)
         # Download stopwords
         #nltk.download('stopwords')
         stop_words = set(stopwords.words('english'))
         #textblob
-        list_of_splitted_tweets = [tweet.lower().split() for tweet in df.tweet_text]
+        list_of_splitted_tweets = [tweet.lower().split() for tweet in df.tweet]
         query_words = ["covid-19", "covid",'''separate query stop words from others''' "could", "got", "like", "&amp;", "-", "|"]
         stop_words.update(query_words)
         words_cleaned =  [[word for word in tweets if not word in stop_words]

@@ -7,5 +7,9 @@ from django.conf import settings
 class Tweets(models.Model):
     query_datetime = models.DateTimeField(default = timezone.now)
     search_keyword = tweet_text = models.CharField(default = "", max_length=100)
-    tweet_id = models.IntegerField()
+    tweet_id = models.CharField(max_length=30)
     tweet_text = models.CharField(max_length=280)
+    #search_id = models.IntegerField(default = 0)
+
+class Search(models.Model):
+    search_id = models.AutoField(primary_key=True)
