@@ -2,8 +2,19 @@
 {% extends "users/base_generic.html" %}
 {% block content %}
    <h3>Welcome {{ user.username }}!</h3>
-   <form action="{% url 'showResults' %}" method="get">
+   <form action="{% url 'fetchData' %}" method="get">
       <input name="search" type="text" name="name_field" placeholder="Search keywords.">
       <input type="submit">
-  </form>
+ 
+      
+<form action="{% url 'fetchData' %}" onsubmit="return false;">
+  <label for="cars">Choose a saved search:</label>
+  <select name="cars" id="cars">
+    <option value="id: 44">id: 44, topic: covid, query date: 01.2021</option>
+    <option value="id: 37">id: 37, topic: covid, query date: 01.2021</option>
+    <option value="id: 5">id: 5, topic: covid, query date: 01.2021</option>
+    <option value="id: 2">id: 2, topic: covid, query date: 01.2021</option>
+  </select>
+  <input type="submit" value="Submit">
+</form>
 {% endblock content %}

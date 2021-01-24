@@ -2,22 +2,42 @@
 {% extends "users/base_generic.html" %}
 {% block content %}
    <h3>Welcome {{ user.username }}!</h3>
-   <form action="{% url 'showResults' %}" method="get">
-      <input name="search" type="text" name="name_field" value="Search keywords.">
+   <form action="{% url 'fetchData' %}" method="get">
+      <input name="search" type="text" name="name_field" placeholder="Search keywords.">
       <input type="submit">
   </form>
-   <h3>{{search}} is searched</h3>
+  {% if search %}
+   <h3>For keyword: {{search}} with search_id:{{search_id}} -> data is fetched. Click the 'Analyze Data' below to see the analysis of your choice!</h3>
+   {% endif %}
 
-   
- 
+
+<p>View last 5 searches</p>
+
+<form action="{% url 'fetchData' %}" onsubmit="return false;">
+  <label for="cars">Choose a saved search:</label>
+  <select name="cars" id="cars">
+    <option value="id: 44">id: 44, topic: covid, query date: 01.2021</option>
+    <option value="id: 37">id: 37, topic: covid, query date: 01.2021</option>
+    <option value="id: 5">id: 5, topic: covid, query date: 01.2021</option>
+    <option value="id: 2">id: 2, topic: covid, query date: 01.2021</option>
+  </select>
+  <input type="submit" value="Submit">
+</form>
+<br></br>
+   <form action="{% url 'showChart' %}" method='GET'>
+    <button type='submit'> Analyze Data</button>
+    </form>
+  
+    <br></br>
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Top10')">Top10</button>
-  <button class="tablinks" action="{% url 'wordcloud' %}" method="get" onclick="openTab(event, 'Wordcloud')">Wordcloud</button>
+  <button class="tablinks" onclick="openTab(event, 'Wordcloud')">Wordcloud</button>
 </div>
 
 <div id="Top10" class="tabcontent">
-  <h3>Top 10 Words</h3>
-
+  {% if s_test %}
+  <h3>Top 10 Words id: {{s_test}} total # of tweets collected: {{count}}</h3>
+  {% endif %}
   <p>
      {% if chart %}
      <img src="data:image/png;base64, {{chart|safe}}">
@@ -27,7 +47,9 @@
 </div>
 
 <div id="Wordcloud" class="tabcontent">
-  <h3>Wordcloud</h3>
+  {% if s_test %}
+  <h3>Wordcloud id: {{s_test}} total # of tweets collected: {{count}}</h3>
+  {% endif %}
   <p>
     {% if wcloud %}
      <img src="data:image/png;base64, {{wcloud|safe}}">
