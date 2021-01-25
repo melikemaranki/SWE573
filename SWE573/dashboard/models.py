@@ -11,6 +11,10 @@ class Tweets(models.Model):
     tweet_id = models.CharField(max_length=30)
     tweet_text = models.CharField(max_length=500)
     search_id = models.IntegerField(default = 0)
+    isSaved = models.BooleanField(default = False)
+    #name given to the saved search by the user
+    #!! 256 karakterden uzun girilirse uyarı vermesi lazım. Unutma!
+    saved_search_alias = models.CharField(max_length = 256, default ="")
 
 class Search(models.Model):
     search_id = models.AutoField(primary_key=True)

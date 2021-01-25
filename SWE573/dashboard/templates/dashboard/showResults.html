@@ -1,4 +1,3 @@
-
 {% extends "users/base_generic.html" %}
 {% block content %}
    <h3>Welcome {{ user.username }}!</h3>
@@ -10,20 +9,20 @@
    <h3>For keyword: {{search}} with search_id:{{search_id}} -> data is fetched. Click the 'Analyze Data' below to see the analysis of your choice!</h3>
    {% endif %}
 
-
 <p>View last 5 searches</p>
 
-<form action="{% url 'fetchData' %}" onsubmit="return false;">
-  <label for="cars">Choose a saved search:</label>
-  <select name="cars" id="cars">
-    <option value="id: 44">id: 44, topic: covid, query date: 01.2021</option>
-    <option value="id: 37">id: 37, topic: covid, query date: 01.2021</option>
-    <option value="id: 5">id: 5, topic: covid, query date: 01.2021</option>
-    <option value="id: 2">id: 2, topic: covid, query date: 01.2021</option>
+<form action="{% url 'showChart_with_ID' %}">
+  <label>Choose a saved search:</label>
+  <select name="id" id="cars">
+    {% for item in q_res %}
+    <option value="{{ item.search_id }}">{{ item.search_id }} - {{item.search_keyword}}</option>
+    {% endfor %}
   </select>
   <input type="submit" value="Submit">
 </form>
+
 <br></br>
+
    <form action="{% url 'showChart' %}" method='GET'>
     <button type='submit'> Analyze Data</button>
     </form>
@@ -75,3 +74,6 @@ function openTab(evt, tabName) {
 </script>     
 
 {% endblock content %}
+{% block sidebar %}
+<h3> deneme</h3>
+{% endblock %}

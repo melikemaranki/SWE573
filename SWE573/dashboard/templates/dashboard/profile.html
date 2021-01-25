@@ -1,20 +1,19 @@
-
 {% extends "users/base_generic.html" %}
-{% block content %}
+{% block content %} 
    <h3>Welcome {{ user.username }}!</h3>
    <form action="{% url 'fetchData' %}" method="get">
       <input name="search" type="text" name="name_field" placeholder="Search keywords.">
       <input type="submit">
- 
-      
-<form action="{% url 'fetchData' %}" onsubmit="return false;">
-  <label for="cars">Choose a saved search:</label>
-  <select name="cars" id="cars">
-    <option value="id: 44">id: 44, topic: covid, query date: 01.2021</option>
-    <option value="id: 37">id: 37, topic: covid, query date: 01.2021</option>
-    <option value="id: 5">id: 5, topic: covid, query date: 01.2021</option>
-    <option value="id: 2">id: 2, topic: covid, query date: 01.2021</option>
+
+<form action="{% url 'showChart_with_ID' %}">
+  <label>Choose a saved search:</label>
+  <select name="id" id="cars">
+    {% for item in q_res %}
+    <option value="{{ item.search_id }}">{{ item.search_id }} - {{item.search_keyword}}</option>
+    {% endfor %}
   </select>
   <input type="submit" value="Submit">
 </form>
-{% endblock content %}
+{% endblock %} 
+{% block analysis %} 
+{% endblock %} 

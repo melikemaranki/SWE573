@@ -1,2 +1,2 @@
 web: waitress-serve --channel-timeout=3000 --port=$PORT SWE573.wsgi:application 
-worker: python manage.py qcluster --settings=SWE573.settings
+worker: python manage.py qcluster
