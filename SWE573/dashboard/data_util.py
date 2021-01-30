@@ -39,13 +39,15 @@ doc = nlp(sentence)
 
 def getData(request, text):
     #search = Cursor(api.search, q = query, lang = 'en'). items(200)
-    s =  Search()
-    s.save()
-    s_id = Search.objects.latest("search_id").pk
+    #s =  Search()
+    #s.save()
+    #s_id = Search.objects.latest("search_id").pk
     date =  timezone.now()
     user = str(request.user)
+
     #to get rid of timeout errors table writing task is run async
-    async_task(write_table_v1, text, user, s_id, date, hook=deneme)
+    s_id = 2
+    async_task(write_table_v1, "netflix", user, s_id, date, hook=deneme)
     #async_task(deneme, "çalışıyor")
     return s_id  
 
@@ -63,7 +65,7 @@ def write_table_v1(text, user, s_id, date):
     ##public_tweets = api.home_timeline()
     query = text +" -filter:retweets"
     
-    search = Cursor(api.search, q = query, lang = 'en'). items(10)
+    search = Cursor(api.search, q = query, lang = 'en'). items(1000)
     print(search)
     try:
         search.next()
@@ -139,9 +141,9 @@ def remove_emoji(string):
 def clean_stopwords(df):
         t0 = time.time()    
         list_of_splitted_tweets = [tweet.split() for tweet in df.tweet_text_lemma]
-        query_words = {"could", "got", "like", "&amp;", '-PRON-', '…'}
+        query_words = {"could", "got", "like", "&amp;","amp", '-PRON-', '…','•','’', '"','’s','🤩','🤣'} 
         stopwords_final = query_words.union(nltk_stopwords)
-        words_cleaned =  [[word for word in tweets if not word in stopwords_final]
+        words_cleaned =  [[word for word in tweets if not word in stopwords_final and not word.isnumeric()]
                         for tweets in list_of_splitted_tweets]
         # Flatten list of words in clean tweets
         all_words = list(itertools.chain(*words_cleaned))

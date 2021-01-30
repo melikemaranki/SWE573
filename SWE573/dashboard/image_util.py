@@ -10,7 +10,6 @@ import time
 import nltk
 import pandas as pd
 import networkx as nx
-import seaborn as sns
 
 
 def get_graph():
@@ -62,15 +61,19 @@ def get_network(all_words):
     unzipped_object = zip(*zipped)
     unzipped_list = list(unzipped_object) 
     a, b = unzipped_list
-  
+    print(all_words)
     nodes = list(a) +list(b)
     edges = x.index.to_list()
-    print("nodes",nodes, edges)
+    #print("type", type(edges))
+    #print("nodes",nodes, "edges",edges)
     plt.clf() 
+    
+    #G=nx.path_graph(4)
+    #pos=nx.circular_layout(G)
     G = nx.karate_club_graph()             
     G.add_nodes_from(nodes)                   
     G.add_edges_from(edges)     
-    nx.draw(G, with_labels=True)
+    nx.draw_spring(G,node_size=0,edge_color='b',font_size=13, with_labels = True)#draw(G, with_labels=True, pos = pos)
     plt.show()
    # plt.figure(figsize=(15,10))
    # plt.show() # display

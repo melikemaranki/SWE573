@@ -20,9 +20,11 @@ def MyView(request):
     #return a response to your template and add query_results to the context
 
 def fetchData(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
-        text = request.GET['search']
+        text = request.POST['search']
+        if not text.strip():
+            return
         s_id = getData(request = request, text = text)
         q_res = MyView(request)
         #s_id = Tweets.objects.filter(user=request.user).latest("search_id").search_id
