@@ -1,7 +1,7 @@
 from django.shortcuts import render 
 from django.contrib.auth.decorators import login_required
 from .data_util import getData
-from .image_util import get_plot, get_wordcloud
+from .image_util import get_plot, get_wordcloud, get_network
 import itertools, collections
 from dashboard.models import Tweets, Search
 from pandas import DataFrame
@@ -35,8 +35,9 @@ def showChart(request):
     data =  clean_stopwords(df)
     chart = get_plot(data)
     wcloud = get_wordcloud(data)
+    network = get_network(data)
     q_res = MyView(request)
-    return render(request, 'dashboard/profile.html', {"chart": chart, "wcloud":wcloud,  "s_test":s_id, "count": tweet_count, 'q_res': q_res})
+    return render(request, 'dashboard/profile.html', {"chart": chart, "wcloud":wcloud, "network":network, "s_test":s_id, "count": tweet_count, 'q_res': q_res})
 
 def showChart_with_ID(request):
     if request.method == 'GET':
@@ -48,5 +49,6 @@ def showChart_with_ID(request):
     data =  clean_stopwords(df)
     chart = get_plot(data)
     wcloud = get_wordcloud(data)
+    network = get_network(data)
     q_res = MyView(request)
-    return render(request, 'dashboard/profile.html', {"chart": chart, "wcloud":wcloud,  "s_test":s_id, "count": tweet_count, 'q_res': q_res})
+    return render(request, 'dashboard/profile.html', {"chart": chart, "wcloud":wcloud, "network":network, "s_test":s_id, "count": tweet_count, 'q_res': q_res})

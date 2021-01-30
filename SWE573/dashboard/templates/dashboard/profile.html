@@ -35,6 +35,7 @@
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Top30')">Top30</button>
   <button class="tablinks" onclick="openTab(event, 'Wordcloud')">Wordcloud</button>
+  <button class="tablinks" onclick="openTab(event, 'Network')">Network</button>
 </div>
 
 <div id="Top30" class="tabcontent">
@@ -46,20 +47,29 @@
      <img src="data:image/png;base64, {{chart|safe}}">
      {% endif %}
    </p>
-
 </div>
 
+{% if wcloud %}
 <div id="Wordcloud" class="tabcontent">
   {% if s_test %}
   <h3>Wordcloud id: {{s_test}} total # of tweets collected: {{count}}</h3>
   {% endif %}
   <p>
-    {% if wcloud %}
      <img src="data:image/png;base64, {{wcloud|safe}}">
-     {% endif %}
   </p> 
 </div>
+{% endif %}
 
+{% if network %}
+<div id="Network" class="tabcontent">
+  {% if s_test %}
+  <h3>Network id: {{s_test}} total # of tweets collected: {{count}}</h3>
+  {% endif %}
+  <p>
+     <img src="data:image/png;base64, {{network|safe}}">
+  </p> 
+</div>
+{% endif %}
 
 <script>
 function openTab(evt, tabName) {

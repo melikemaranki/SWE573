@@ -7,6 +7,10 @@ from wordcloud import WordCloud, STOPWORDS
 import urllib
 from asgiref.sync import sync_to_async
 import time
+import nltk
+import pandas as pd
+import networkx as nx
+import seaborn as sns
 
 
 def get_graph():
@@ -50,4 +54,26 @@ def get_wordcloud(all_words):
     t1 = time.time()
     print("countingwords",t2-t0)
     print("get_wcloud_run_time",t1-t0)
+    return graph
+
+def get_network(all_words):
+    x = (pd.Series(nltk.ngrams(all_words, 2)).value_counts())[:100]
+    zipped = x.keys()
+    unzipped_object = zip(*zipped)
+    unzipped_list = list(unzipped_object) 
+    a, b = unzipped_list
+  
+    nodes = list(a) +list(b)
+    edges = x.index.to_list()
+    print("nodes",nodes, edges)
+    plt.clf() 
+    G = nx.karate_club_graph()             
+    G.add_nodes_from(nodes)                   
+    G.add_edges_from(edges)     
+    nx.draw(G, with_labels=True)
+    plt.show()
+   # plt.figure(figsize=(15,10))
+   # plt.show() # display
+
+    graph = get_graph()
     return graph
