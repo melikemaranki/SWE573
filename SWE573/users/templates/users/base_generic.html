@@ -13,9 +13,6 @@
       {% block sidebar %}
         <ul class="sidebar-nav">
           <li><a href="https://github.com/melikemaranki/SWE573/wiki" target= '_blank'>Project Wiki</a></li>
-          {% if user.is_authenticated %}
-          <li><a class='nav-item nav-link' href="{%url 'logout' %}">Logout</a></li>
-         {% endif %}
         </ul>
      {% endblock %}
       </div>

@@ -23,6 +23,7 @@ def get_plot(all_words):
     # Most common words
     word_counts = collections.Counter(all_words)
     mc = dict(word_counts.most_common(30))
+    print(mc)
     x=  mc.keys()
     y = mc.values()
     plt.figure(figsize=(15,10))

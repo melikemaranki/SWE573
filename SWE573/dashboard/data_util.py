@@ -4,9 +4,7 @@ from django.http import JsonResponse
 from django_q.tasks import async_task
 import tweepy
 from .myCredentials import access_token, access_token_secret, consumer_key, consumer_secret, bearer
-from tweepy import StreamListener
-from tweepy import Stream
-from tweepy import Cursor
+from tweepy import StreamListener, Stream, Cursor
 import pandas as pd
 from pandas import DataFrame
 #from nltk import bigrams
@@ -22,10 +20,22 @@ from django_q.tasks import async_task, result
 # Use the schedule wrapper
 from django_q.tasks import schedule, Schedule
 from django.http import HttpResponse
+import spacy
+from django.shortcuts import render 
 
+# Initialize spacy 'en' model, keeping only tagger component needed for lemmatization
+nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 import string
 
+sentence = "The striped bats are hanging on their feet for best"
+
+
+doc = nlp(sentence)
+
+# Extract the lemma for each token and join
+" ".join([token.lemma_ for token in doc])
+#> 'the strip bat be hang on -PRON- foot for good'
 
 def getData(request, text):
     #search = Cursor(api.search, q = query, lang = 'en'). items(200)
@@ -35,14 +45,14 @@ def getData(request, text):
     date =  timezone.now()
     user = str(request.user)
     #to get rid of timeout errors table writing task is run async
-    async_task(write_table_v1, text, user, s_id, date)#, hook=showChart)
-    async_task(deneme, "çalışıyor")
+    async_task(write_table_v1, text, user, s_id, date, hook=deneme)
+    #async_task(deneme, "çalışıyor")
     return s_id  
 
-def deneme(s):
-    print(s)
+def deneme(request):
+    return HttpResponse('<h1>Hello HttpResponse</h1>')  
 
-
+#Data collection function for Twitter API v1.1
 def write_table_v1(text, user, s_id, date):
    # Pass OAuth details to tweepy's OAuth handler
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -53,7 +63,7 @@ def write_table_v1(text, user, s_id, date):
     ##public_tweets = api.home_timeline()
     query = text +" -filter:retweets"
     
-    search = Cursor(api.search, q = query, lang = 'en'). items(1000)
+    search = Cursor(api.search, q = query, lang = 'en'). items(10)
     print(search)
     try:
         search.next()
@@ -64,15 +74,25 @@ def write_table_v1(text, user, s_id, date):
 
         for tweet in search:
             s = remove_emoji(re.sub(r'http\S+', '', tweet.text)).lower()
+
+            #removes search keyword
             s = s.replace(text, "")
-            tweet.text = s.translate(str.maketrans('', '', string.punctuation))
-            query = Tweets(user = user, tweet_id = tweet.id, tweet_text = tweet.text, search_keyword = text, search_id = s_id, query_datetime = date)
+            s = s.translate(str.maketrans('', '', string.punctuation))
+            tweet.text = s
+            # Parse the sentence using the loaded 'en' model object `nlp`
+            lemma_nlp = nlp(tweet.text)
+            # Extract the lemma for each token and join
+            lemma = " ".join([token.lemma_ for token in lemma_nlp])
+            
+            query = Tweets(user = user, tweet_id = tweet.id, tweet_text = tweet.text, tweet_text_lemma = lemma,
+            search_keyword = text, search_id = s_id, query_datetime = date)
             query.save()
         
     print("v1 async task bitti",Tweets.objects.filter(search_id = s_id).count())
-        
+    
 
 
+#Data collection function for Twitter API v2
 def write_table_v2(text, user, s_id, date):
     url = 'https://api.twitter.com/2/tweets/search/recent'
     headers = {
@@ -118,16 +138,18 @@ def remove_emoji(string):
 
 def clean_stopwords(df):
         t0 = time.time()    
-        list_of_splitted_tweets = [tweet.split() for tweet in df.tweet_text]
-        query_words = {"could", "got", "like", "&amp;"}
+        list_of_splitted_tweets = [tweet.split() for tweet in df.tweet_text_lemma]
+        query_words = {"could", "got", "like", "&amp;", '-PRON-', '…'}
         stopwords_final = query_words.union(nltk_stopwords)
-        words_cleaned =  [[word for word in tweets if not word in nltk_stopwords]
+        words_cleaned =  [[word for word in tweets if not word in stopwords_final]
                         for tweets in list_of_splitted_tweets]
         # Flatten list of words in clean tweets
         all_words = list(itertools.chain(*words_cleaned))
         t1 = time.time()
         print("stopword_cleaning",t1-t0)
         return all_words
+
+
 
 
 nltk_stopwords = {'a',

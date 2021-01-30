@@ -10,6 +10,7 @@ class Tweets(models.Model):
     search_keyword = tweet_text = models.CharField(default = "", max_length=100)
     tweet_id = models.CharField(max_length=30)
     tweet_text = models.CharField(max_length=500)
+    tweet_text_lemma = models.CharField(default = "", max_length=500)
     search_id = models.IntegerField(default = 0)
     isSaved = models.BooleanField(default = False)
     #name given to the saved search by the user
@@ -18,3 +19,4 @@ class Tweets(models.Model):
 
 class Search(models.Model):
     search_id = models.AutoField(primary_key=True)
+
