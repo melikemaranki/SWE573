@@ -20,3 +20,9 @@
         </div>
     </div>
 {% endblock content %}
+{% block sidebar %}
+        <ul class="sidebar-nav">
+          <li><a href="https://github.com/melikemaranki/SWE573/wiki" target= '_blank'>Project Wiki</a></li>
+          <li><a href="{% url 'login' %}" target= '_blank'>Sign In</a></li>
+        </ul>
+     {% endblock %}

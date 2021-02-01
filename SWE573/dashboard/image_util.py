@@ -45,7 +45,7 @@ def get_wordcloud(all_words):
     # Generate wordcloud
     """width = 3000, height = 2000, random_state=1, background_color='black', colormap='Set2', collocations=False"""
     wc = WordCloud(max_font_size=50, max_words=100,width=600, height=400, background_color="white").generate_from_frequencies(mc)
-    plt.figure(figsize=(15,10))
+    plt.clf() 
     plt.imshow(wc, interpolation='bilinear')
     plt.axis("off")
 
@@ -61,7 +61,7 @@ def get_network(all_words):
     unzipped_object = zip(*zipped)
     unzipped_list = list(unzipped_object) 
     a, b = unzipped_list
-    print(all_words)
+    #print(all_words)
     nodes = list(a) +list(b)
     edges = x.index.to_list()
     #print("type", type(edges))
@@ -75,8 +75,6 @@ def get_network(all_words):
     G.add_edges_from(edges)     
     nx.draw_spring(G,node_size=0,edge_color='b',font_size=13, with_labels = True)#draw(G, with_labels=True, pos = pos)
     plt.show()
-   # plt.figure(figsize=(15,10))
-   # plt.show() # display
 
     graph = get_graph()
     return graph

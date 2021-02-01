@@ -24,7 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile/', dashboard_views.profile, name = 'profile'),
     path('fetchData/', dashboard_views.fetchData, name = 'fetchData'),
-    path('showChart/', dashboard_views.showChart, name = 'showChart'),
     path('showChart_with_ID/', dashboard_views.showChart_with_ID, name = 'showChart_with_ID'),
     path('register/', user_views.register, name = 'register'),
     path('login/', auth_views.LoginView.as_view(template_name = 'users/login.html'), name='login'),

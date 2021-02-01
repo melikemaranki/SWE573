@@ -1,75 +1,73 @@
 {% extends "users/base_generic.html" %}
 {% block content %}
-<br></br>
-   <h3>Welcome {{ user.username }}!</h3>
-   <br></br>
+   <br/>
+   <h4>You can search and collect data by using the search box. Data collected will be added to "Select Data" dropdown menu.</h4>
    <form action="{% url 'fetchData' %}" method="POST">
     {% csrf_token %}
-      <input name="search" type="text" name="name_field" placeholder="Search keywords.">
-      <input type="submit">
+    <input name="search" type="text" name="name_field" placeholder="Search keywords">
+    <input type="submit" value="Collect">
   </form>
+  <br/>
   {% if search %}
-   <h3>For keyword: {{search}} with search_id:{{search_id}} -> data is fetched. Click the 'Analyze Data' below to see the analysis of your choice!</h3>
+   <h5>We are collecting data for keyword: {{search}} with search_id:{{search_id}}. 
+     Data will be listed in the available tables menu when the collection process finishes.
+     It will take about 5 minutes to collect the data. Refresh the tables to see your table in select data list.
+   </h5>
    {% endif %}
 
-<p>View last 5 searches</p>
+<h5>To see analysis results you should select a table and push the submit button.
+  Last 5 searches and 2 pre-collected tables(covid, netflix) are available in the "Select Data" list.
+</h5>
 
-<form action="{% url 'showChart_with_ID' %}">
-  <label>Choose a saved search:</label>
-  <select name="id" id="table_list">
+<form action="{% url 'showChart_with_ID' %}" method='POST'>
+  {% csrf_token %}
+  <label>Select Data:</label>
+  <select name="id" id="id">
     <option value="1">id: 1 - keyword: covid - date: 30.01.2021 </option>
-    <option value="1">id: 2 - keyword: netflix - date: 30.01.2021 </option>
+    <option value="2">id: 2 - keyword: netflix - date: 30.01.2021 </option>
     {% for item in q_res %}
     <option value="{{ item.search_id }}">id: {{item.search_id }} - keyword: {{item.search_keyword}} -  date: {{item.query_datetime}}</option>
     {% endfor %}
   </select>
   <input type="submit" value="Submit">
+  <input type="submit" value="Refresh Dropdown List" name="refresh">
 </form>
 
-<br></br>
+<style>
+select{
+  overflow:auto;
+}
+</style>
 
-   <form action="{% url 'showChart' %}" method='POST'>
-    {% csrf_token %}
-    <button type='submit'> Analyze Data</button>
-    </form>
-  
-    <br></br>
+
+{% if msg %}
+<h3>{{msg}}</h3>
+{% endif %}
+<br/>
+{% if s_test %}
+<h3>For keyword: {{kword.search_keyword}} with id: {{s_test}} total # of tweets collected: {{count}}</h3>
+{% endif %}
+{% if s_test %}
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Top30')">Top30</button>
   <button class="tablinks" onclick="openTab(event, 'Wordcloud')">Wordcloud</button>
   <button class="tablinks" onclick="openTab(event, 'Network')">Network</button>
 </div>
+{% endif %}
 
-<div id="Top30" class="tabcontent">
-  {% if s_test %}
-  <h3> For search id: {{s_test}}, total number of tweets: {{count}}</h3>
-  {% endif %}
-  <p>
-     {% if chart %}
-     <img src="data:image/png;base64, {{chart|safe}}">
-     {% endif %}
-   </p>
+<div id="Top30" class="tabcontent" style=display:block>
+  {% if chart %}<img src="data:image/png;base64, {{chart|safe}}">{% endif %}
 </div>
 
 {% if wcloud %}
 <div id="Wordcloud" class="tabcontent">
-  {% if s_test %}
-  <h3>Wordcloud id: {{s_test}} total # of tweets collected: {{count}}</h3>
-  {% endif %}
-  <p>
      <img src="data:image/png;base64, {{wcloud|safe}}">
-  </p> 
 </div>
 {% endif %}
 
 {% if network %}
 <div id="Network" class="tabcontent">
-  {% if s_test %}
-  <h3>Network id: {{s_test}} total # of tweets collected: {{count}}</h3>
-  {% endif %}
-  <p>
      <img src="data:image/png;base64, {{network|safe}}">
-  </p> 
 </div>
 {% endif %}
 
@@ -87,6 +85,7 @@ function openTab(evt, tabName) {
   document.getElementById(tabName).style.display = "block";
   evt.currentTarget.className += " active";
 }
+
 </script>   
 
 <style>
@@ -95,7 +94,7 @@ function openTab(evt, tabName) {
   /* Style the tab */
   .tab {
     overflow: hidden;
-    border: 1px solid #ccc;
+    border: 0.2px solid #ccc;
     background-color: #f1f1f1;
   }
   
@@ -103,7 +102,7 @@ function openTab(evt, tabName) {
   .tab button {
     background-color:#ccc;
     float: left;
-    border: .5px solid;
+    border: .2px solid;
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
@@ -120,6 +119,13 @@ function openTab(evt, tabName) {
   .tab button.active {
     background-color: #ccc;
   }
+
+  /* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  display: none;
+  height: 100%;
+}
   </style>  
 
 {% endblock content %}
@@ -130,4 +136,6 @@ function openTab(evt, tabName) {
   <li><a href="https://github.com/melikemaranki/SWE573/wiki" target= '_blank'>Project Wiki</a></li>
 <li><a class='nav-item nav-link' href="{%url 'logout' %}">Logout</a></li>
 </ul>
+<br/>
+   <h3>Welcome {{ user.username }}!</h3>
 {% endblock %}

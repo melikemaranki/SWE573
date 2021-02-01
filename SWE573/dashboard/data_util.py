@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django_q.tasks import async_task
 import tweepy
 from .myCredentials import access_token, access_token_secret, consumer_key, consumer_secret, bearer
-from tweepy import StreamListener, Stream, Cursor
 import pandas as pd
 from pandas import DataFrame
 #from nltk import bigrams
@@ -16,9 +15,7 @@ from django.utils import timezone
 from dashboard.models import Tweets, Search
 import time
 import requests
-from django_q.tasks import async_task, result
-# Use the schedule wrapper
-from django_q.tasks import schedule, Schedule
+from django_q.tasks import async_task, result, schedule, Schedule
 from django.http import HttpResponse
 import spacy
 from django.shortcuts import render 
@@ -38,21 +35,17 @@ doc = nlp(sentence)
 #> 'the strip bat be hang on -PRON- foot for good'
 
 def getData(request, text):
-    #search = Cursor(api.search, q = query, lang = 'en'). items(200)
-    #s =  Search()
-    #s.save()
-    #s_id = Search.objects.latest("search_id").pk
+    s =  Search()
+    s.save()
+    s_id = Search.objects.latest("search_id").pk
     date =  timezone.now()
     user = str(request.user)
 
     #to get rid of timeout errors table writing task is run async
-    s_id = 2
-    async_task(write_table_v1, "netflix", user, s_id, date, hook=deneme)
-    #async_task(deneme, "çalışıyor")
+    #s_id = 2
+    #text ="netflix"
+    async_task(write_table_v1, text, user, s_id, date)# hook=deneme)
     return s_id  
-
-def deneme(request):
-    return HttpResponse('<h1>Hello HttpResponse</h1>')  
 
 #Data collection function for Twitter API v1.1
 def write_table_v1(text, user, s_id, date):
@@ -65,7 +58,8 @@ def write_table_v1(text, user, s_id, date):
     ##public_tweets = api.home_timeline()
     query = text +" -filter:retweets"
     
-    search = Cursor(api.search, q = query, lang = 'en'). items(1000)
+    t0 = time.time()  
+    search = tweepy.Cursor(api.search, q = query, lang = 'en'). items(2001)
     print(search)
     try:
         search.next()
@@ -78,7 +72,7 @@ def write_table_v1(text, user, s_id, date):
             s = remove_emoji(re.sub(r'http\S+', '', tweet.text)).lower()
 
             #removes search keyword
-            s = s.replace(text, "")
+            s = s.replace(text.lower(), "")
             s = s.translate(str.maketrans('', '', string.punctuation))
             tweet.text = s
             # Parse the sentence using the loaded 'en' model object `nlp`
@@ -89,7 +83,8 @@ def write_table_v1(text, user, s_id, date):
             query = Tweets(user = user, tweet_id = tweet.id, tweet_text = tweet.text, tweet_text_lemma = lemma,
             search_keyword = text, search_id = s_id, query_datetime = date)
             query.save()
-        
+    t1 = time.time()
+    print("stopword_cleaning",t1-t0)    
     print("v1 async task bitti",Tweets.objects.filter(search_id = s_id).count())
     
 
@@ -141,7 +136,7 @@ def remove_emoji(string):
 def clean_stopwords(df):
         t0 = time.time()    
         list_of_splitted_tweets = [tweet.split() for tweet in df.tweet_text_lemma]
-        query_words = {"could", "got", "like", "&amp;","amp", '-PRON-', '…','•','’', '"','’s','🤩','🤣'} 
+        query_words = {"could", "got", "like", "&amp;","amp", '-PRON-', '…','•','’', '"','’s','🤩','🤣',"'", '—'} 
         stopwords_final = query_words.union(nltk_stopwords)
         words_cleaned =  [[word for word in tweets if not word in stopwords_final and not word.isnumeric()]
                         for tweets in list_of_splitted_tweets]
