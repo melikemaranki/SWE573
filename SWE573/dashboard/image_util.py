@@ -41,9 +41,7 @@ def get_wordcloud(all_words):
     word_counts = collections.Counter(all_words)
     mc = dict(word_counts.most_common(100))
     t2 = time.time()
-    #text = " ".join(all_words)
     # Generate wordcloud
-    """width = 3000, height = 2000, random_state=1, background_color='black', colormap='Set2', collocations=False"""
     wc = WordCloud(max_font_size=50, max_words=100,width=600, height=400, background_color="white").generate_from_frequencies(mc)
     plt.clf() 
     plt.imshow(wc, interpolation='bilinear')

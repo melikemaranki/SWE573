@@ -40,9 +40,6 @@ select{
 </style>
 
 
-{% if msg %}
-<h3>{{msg}}</h3>
-{% endif %}
 <br/>
 {% if s_test %}
 <h3>For keyword: {{kword.search_keyword}} with id: {{s_test}} total # of tweets collected: {{count}}</h3>
@@ -56,17 +53,20 @@ select{
 {% endif %}
 
 <div id="Top30" class="tabcontent" style=display:block>
+  <p>Most frequently used 30 words are listed.</p>
   {% if chart %}<img src="data:image/png;base64, {{chart|safe}}">{% endif %}
 </div>
 
 {% if wcloud %}
 <div id="Wordcloud" class="tabcontent">
+  <p>Most frequently used 100 words are shown in the wordcloud.</p>
      <img src="data:image/png;base64, {{wcloud|safe}}">
 </div>
 {% endif %}
 
 {% if network %}
 <div id="Network" class="tabcontent">
+  <p>The relations of 100 bigrams(words which are next to each other in a sentence) are shown in the network graph.</p>
      <img src="data:image/png;base64, {{network|safe}}">
 </div>
 {% endif %}
