@@ -32,9 +32,7 @@ def getData(request, text):
     user = str(request.user)
 
     #to get rid of timeout errors table writing task is run async
-    #s_id = 2
-    #text ="netflix"
-    async_task(write_table_v1, text, user, s_id, date)# hook=deneme)
+    async_task(write_table_v1, text, user, s_id, date)
     return s_id  
 
 #Data collection function for Twitter API v1.1
