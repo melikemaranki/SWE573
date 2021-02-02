@@ -1,7 +1,7 @@
 {% extends "users/base_generic.html" %}
 {% block content %}
    <br/>
-   <h4>You can search and collect data by using the search box. Data collected will be added to "Select Data" dropdown menu.</h4>
+   <h6>You can search and collect data by using the search box. Data collected will be added to "Select Data" dropdown menu.</h6>
    <form action="{% url 'fetchData' %}" method="POST">
     {% csrf_token %}
     <input name="search" type="text" name="name_field" placeholder="Search keywords">
@@ -9,15 +9,16 @@
   </form>
   <br/>
   {% if search %}
-   <h5>We are collecting data for keyword: {{search}} with search_id:{{search_id}}. 
+   <h5 style="border:2px solid DodgerBlue;">We are collecting data for keyword: {{search}} with search_id:{{search_id}}. 
      Data will be listed in the available tables menu when the collection process finishes.
-     It will take about 5 minutes to collect the data. Refresh the tables to see your table in select data list.
+     It will take about 5 minutes to collect the data. Refresh the tables to see your table in "Select Data" list.
    </h5>
    {% endif %}
-
-<h5>To see analysis results you should select a table and push the submit button.
+  
+<h6>To see analysis results you should select a table and <font color="tomato"><b>click the submit</b></font> button.
   Last 5 searches and 2 pre-collected tables(covid, netflix) are available in the "Select Data" list.
-</h5>
+</h6>
+
 
 <form action="{% url 'showChart_with_ID' %}" method='POST'>
   {% csrf_token %}
@@ -30,7 +31,7 @@
     {% endfor %}
   </select>
   <input type="submit" value="Submit">
-  <input type="submit" value="Refresh Dropdown List" name="refresh">
+  <input type="submit" value="Refresh Dropdown List" formaction="{% url 'profile' %}">
 </form>
 
 <style>
@@ -42,8 +43,10 @@ select{
 
 <br/>
 {% if s_test %}
-<h3>For keyword: {{kword.search_keyword}} with id: {{s_test}} total # of tweets collected: {{count}}</h3>
+<h5>For keyword: <font color="blue"><b>{{kword.search_keyword}} </b></font> 
+  with id: {{s_test}} total # of tweets collected:  <font color="blue"><b>{{count}}</b></font></h5>
 {% endif %}
+<!-- Reference: https://www.w3schools.com/howto/howto_js_tabs.asp -->
 {% if s_test %}
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Top30')">Top30</button>
@@ -54,20 +57,20 @@ select{
 
 <div id="Top30" class="tabcontent" style=display:block>
   <p>Most frequently used 30 words are listed.</p>
-  {% if chart %}<img src="data:image/png;base64, {{chart|safe}}">{% endif %}
+  {% if chart %}<img src="data:image/png;base64, {{chart|safe}}" width="1000" height="750">{% endif %}
 </div>
 
 {% if wcloud %}
 <div id="Wordcloud" class="tabcontent">
   <p>Most frequently used 100 words are shown in the wordcloud.</p>
-     <img src="data:image/png;base64, {{wcloud|safe}}">
+     <img src="data:image/png;base64, {{wcloud|safe}}" width="1000" height="750">
 </div>
 {% endif %}
 
 {% if network %}
 <div id="Network" class="tabcontent">
   <p>The relations of 100 bigrams(words which are next to each other in a sentence) are shown in the network graph.</p>
-     <img src="data:image/png;base64, {{network|safe}}">
+     <img src="data:image/png;base64, {{network|safe}}" width="1000" height="750">
 </div>
 {% endif %}
 
@@ -105,7 +108,7 @@ function openTab(evt, tabName) {
     border: .2px solid;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 7px 8px;
     transition: 0.3s;
     font-size: 17px;
   }

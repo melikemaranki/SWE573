@@ -19,20 +19,10 @@ from django_q.tasks import async_task, result, schedule, Schedule
 from django.http import HttpResponse
 import spacy
 from django.shortcuts import render 
+import string
 
 # Initialize spacy 'en' model, keeping only tagger component needed for lemmatization
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
-
-import string
-
-sentence = "The striped bats are hanging on their feet for best"
-
-
-doc = nlp(sentence)
-
-# Extract the lemma for each token and join
-" ".join([token.lemma_ for token in doc])
-#> 'the strip bat be hang on -PRON- foot for good'
 
 def getData(request, text):
     s =  Search()
@@ -115,7 +105,7 @@ def write_table_v2(text, user, s_id, date):
         #user_mention = []
         for index in df.index: 
             s = remove_emoji(re.sub(r'http\S+', '', df['text'][index])).lower()
-            s = s.replace(text, "")
+            s = s.replace(text.lower(), "")
             df['text'][index] = s.translate(str.maketrans('', '', string.punctuation))
             query = Tweets(user = user, tweet_id = df['id'][index], tweet_text = df['text'][index], search_keyword = text, search_id = s_id, query_datetime = date)
             query.save()    
